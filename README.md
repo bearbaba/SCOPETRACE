@@ -22,7 +22,20 @@ TraceBound is a separate auditing primitive. It reads the **live active policy f
 - **Contract B:** `contracts/trace_bound.py`, deploy with constructor `scope_registry_address="0xEE7B3883e8a52A48368AdB0528F49730A0aE1689"` **only after** confirming A is deployed and `stats()` reports `SCOPEDELTA`, version `1.0.0`.
 - **Contract B — live deployed source verified:** [TraceBound `0xaD4de51008032F665d44964B1589B7D112156a32`](https://studio.genlayer.com/?import-contract=0xaD4de51008032F665d44964B1589B7D112156a32).
 - **Read-only deployment verifier:** `npm run verify:studionet` checks the deployed source bytes for A/B, `stats()`, `get_registry()`, and `LATEST_FINAL` against the GitHub contract files. The CI result (rather than the URLs alone) establishes whether the link is verified.
-- **Signed create/assess/audit TX links:** Pending. [Deployment proof](docs/DEPLOYMENT_EVIDENCE.md) confirms source identity and registry binding, not signed trace calls or AI consensus.
+- **Live signed workflow, now verified:** [Deployment evidence](docs/DEPLOYMENT_EVIDENCE.md) includes accepted real Explorer receipts for cross-contract `submit_trace`, both `assess_trace` cases, `propose_change`, `assess_change`, the blocked premature activation, separate wallet approvals, and `activate_change`. [LATEST_FINAL CI attestation](https://github.com/bearbaba/SCOPETRACE/actions/runs/44253306291) confirms both deployed sources and final contract state. Trace evidence remains synthetic/self-reported, not independent real-world telemetry.
+
+## Verified live test outcomes (18 Nov 2026)
+
+| Contract | On-chain method | Finalized result | Receipt |
+|---|---|---|---|
+| TraceBound B | `assess_trace(1)` | `UNVERIFIED`, evidence REVIEW | [Audit #1](https://explorer-studio.genlayer.com/tx/0x80644f594c4328466fba0d680afd98fbd6faea38b2d856b981a5cb06d7b7e7e0) |
+| TraceBound B | `assess_trace(2)` | `BREACH`, forbidden `external_export` | [Audit #2](https://explorer-studio.genlayer.com/tx/0x49ab1442920d761a5f352f13e0fb4c52dfaa4653c01aa7eefc5afdd85b0f8c41) |
+| ScopeDelta A | `assess_change(1)` | `EXPANDED`, new `tag_ticket` action | [Assessment](https://explorer-studio.genlayer.com/tx/0x5029d3cd69311fb93166771e7a414616824dfdb7ef841f9d8e0e7d63bd174d2f) |
+| ScopeDelta A | `activate_change(1)` before approvals | GenVM `ERROR / Rollback` | [Rejected attempt](https://explorer-studio.genlayer.com/tx/0xf82c0f5f8dcb30c2d87d2706b88264d35a5352281e149a60bdd3a90dad45727e) |
+| ScopeDelta A | `approve_change(1)` from Principal, then Agent | `ONE_APPROVAL`, then `BOTH_APPROVED` | [Principal](https://explorer-studio.genlayer.com/tx/0x07d93f3f70a37c632224c7e4fa7f03904a402ebdb21017236df4450914941352) / [Agent](https://explorer-studio.genlayer.com/tx/0xce759e93b0435e96d07d4d394776a82beabca2244c37aaece83143b771fb38db) |
+| ScopeDelta A | `activate_change(1)` after both approvals | `ACTIVATED`, Scope #1 v2 | [Activation](https://explorer-studio.genlayer.com/tx/0x46c4169070f428a3da8c212470b1abf2d7e8bd4fd285c30a4f1ef77283d8eaa9) |
+
+**Proof boundary:** GenLayer receipts establish accepted contract executions and on-chain classifications; SHA-256 commits reported bytes. Self-reported synthetic traces do **not** establish that any external support tickets were accessed or exported. There is not yet a live, all-PASS `COMPLIANT` receipt.
 
 ## Deploy on GenLayer Studio / Studionet
 

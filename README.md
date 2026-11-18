@@ -15,14 +15,14 @@ TraceBound is a separate auditing primitive. It reads the **live active policy f
 
 **Trust boundary:** traces are self-reported and hashes do not prove omitted actions did not happen. This is not a production telemetry oracle, funds controller, or actual enforcement firewall. The contract names, declared version and hash of A are checked, but deployment of B still requires trusting/verifying the selected source address.
 
-## Studionet deployment references — both addresses supplied (18 Nov 2026)
+## Studionet deployment source + constructor verified (18 Nov 2026)
 
-- **Contract A candidate (user-provided Studio import):** [ScopeDelta 0xEE7B3883e8a52A48368AdB0528F49730A0aE1689](https://studio.genlayer.com/?import-contract=0xEE7B3883e8a52A48368AdB0528F49730A0aE1689)
-- **Verification status:** Import URL provided; deployment finality, deployed source identity, and `LATEST_FINAL stats()` not independently checked in this repository yet.
+- **Contract A — live deployed source verified:** [ScopeDelta 0xEE7B3883e8a52A48368AdB0528F49730A0aE1689](https://studio.genlayer.com/?import-contract=0xEE7B3883e8a52A48368AdB0528F49730A0aE1689)
+- **Verification status:** [Read-only Studionet attestation](https://github.com/bearbaba/SCOPETRACE/actions/runs/44245818416) PASS. Both deployed source files match GitHub exactly; A and B stats read at LATEST_FINAL report v1.0.0, and B.get_registry() returns A. Initial counts: 0 scopes, 0 audits.
 - **Contract B:** `contracts/trace_bound.py`, deploy with constructor `scope_registry_address="0xEE7B3883e8a52A48368AdB0528F49730A0aE1689"` **only after** confirming A is deployed and `stats()` reports `SCOPEDELTA`, version `1.0.0`.
-- **Contract B candidate (user-provided Studio import):** [TraceBound `0xaD4de51008032F665d44964B1589B7D112156a32`](https://studio.genlayer.com/?import-contract=0xaD4de51008032F665d44964B1589B7D112156a32).
+- **Contract B — live deployed source verified:** [TraceBound `0xaD4de51008032F665d44964B1589B7D112156a32`](https://studio.genlayer.com/?import-contract=0xaD4de51008032F665d44964B1589B7D112156a32).
 - **Read-only deployment verifier:** `npm run verify:studionet` checks the deployed source bytes for A/B, `stats()`, `get_registry()`, and `LATEST_FINAL` against the GitHub contract files. The CI result (rather than the URLs alone) establishes whether the link is verified.
-- **Signed create/assess/audit TX links:** Pending. Neither import URL proves accepted AI consensus.
+- **Signed create/assess/audit TX links:** Pending. [Deployment proof](docs/DEPLOYMENT_EVIDENCE.md) confirms source identity and registry binding, not signed trace calls or AI consensus.
 
 ## Deploy on GenLayer Studio / Studionet
 

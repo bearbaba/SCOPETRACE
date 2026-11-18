@@ -38,6 +38,11 @@ const b_sha=await verifySource('TraceBound',sourceB,'contracts/trace_bound.py');
 const aStats=await read(sourceA,'stats');
 const bStats=await read(sourceB,'stats');
 const bAddress=await read(sourceB,'get_registry');
+const scopeOne=await read(sourceA,'get_scope',[1]);
+const activeOne=await read(sourceA,'get_active_scope',[1]);
+const initialSha='facc957baeedb76db936131d228e88f3ce5455e35652938a5b06882bad5550c9';
+const initialPrincipal='0x4c7cb73ac8f8999af21cfc9ff4cf2333a9508dcb';
+const initialAgent='0xd6b8a3a5eb329410d9504784812b8569afa8c2af';
 const expected={
  scope_name:aStats?.name==='SCOPEDELTA',
  scope_version:aStats?.version==='1.0.0',
@@ -45,7 +50,13 @@ const expected={
  trace_version:bStats?.version==='1.0.0',
  constructor_reference:typeof bAddress==='string'&&bAddress.toLowerCase()===sourceA.toLowerCase(),
  public_stats_reference:typeof bStats?.source_registry==='string'&&bStats.source_registry.toLowerCase()===sourceA.toLowerCase(),
- source_contract_distinct:sourceA.toLowerCase()!==sourceB.toLowerCase()
+ source_contract_distinct:sourceA.toLowerCase()!==sourceB.toLowerCase(),
+ scope1_exists:scopeOne?.id===1&&aStats.scopes>=1,
+ scope1_identities:scopeOne?.principal===initialPrincipal&&scopeOne?.agent===initialAgent,
+ scope1_initial_policy_sha256:scopeOne?.history?.[0]?.policy_sha256===initialSha,
+ scope1_initial_version:scopeOne?.history?.[0]?.version===1,
+ scope1_latest_final_readback:activeOne?.id===1&&activeOne?.version===scopeOne?.active_version&&
+  activeOne?.policy_sha256===scopeOne?.active?.policy_sha256
 };
 if(Object.values(expected).some(ok=>!ok))throw Error('LATEST_FINAL contract policy/binding mismatch: '+JSON.stringify({expected,aStats,bStats,bAddress}));
 console.log(JSON.stringify({
@@ -53,5 +64,6 @@ console.log(JSON.stringify({
  scopeDelta:{address:sourceA,source_sha256:a_sha,stats:aStats},
  traceBound:{address:sourceB,source_sha256:b_sha,stats:bStats,stored_registry_address:bAddress},
  checks:expected,
- limitations:'Deployment/source/constructor verified only. No scope created, signed actions or accepted AI consensus proven.'
+ scope1:{initial_sha256:initialSha,latest_final_version:activeOne?.version,principal:scopeOne?.principal,agent:scopeOne?.agent},
+ limitations:'Contract source, constructor, and Scope #1 live readback verified. No signed cross-contract trace or AI consensus proven.'
 },null,2));

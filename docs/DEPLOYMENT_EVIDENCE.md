@@ -94,3 +94,15 @@ No fabricated transaction hashes or success claims are supplied here.
 - Genuine GenLayer Equivalence Principle output: `{"label":"EXPANDED"}`.
 - This proves an accepted on-chain classification from ScopeDelta A, alongside the prior accepted AI assessment of TraceBound Audit #1. Read-only CI verifies Change #1's resulting `label=EXPANDED` and `state=ASSESSMENT_ACCEPTED` or, if later activated through the required two approvals, `ACTIVATED`.
 - **Next security gate:** separately test `approve_change(1)` with Principal and Agent, then `activate_change(1)` only after both approvals; record transaction receipts. Until activation, active Scope #1 version remains 1.
+
+## Negative security gate — premature activation rejected (18 November 2026)
+
+- **Rejected attempt TX:** [`0xf82c0f5f8dcb30c2d87d2706b88264d35a5352281e149a60bdd3a90dad45727e`](https://explorer-studio.genlayer.com/tx/0xf82c0f5f8dcb30c2d87d2706b88264d35a5352281e149a60bdd3a90dad45727e).
+- User-provided Explorer receipt: outer transaction **FINALIZED / Accepted**, but **GenVM ERROR / Rollback** (not a successful activation).
+- Principal `0x4C7cb73aC8F8999af21cfc9fF4cF2333a9508Dcb` attempted `activate_change(1)` on ScopeDelta A, nonce 552.
+- Exact reported rejection: `two independent approvals and accepted review required`. Since `assess_change(1)` had already succeeded, the missing requirement is approval by both independent wallets. An outer Accepted consensus does **not** override GenVM rollback.
+- This rejection is evidence that the dual-approval activation guard is enforced. No activation was committed by the rejected call. The read-only CI additionally checks active policy version/hash against the change's state at `LATEST_FINAL`.
+- **First approval — Principal**: [`0x07d93f3f70a37c632224c7e4fa7f03904a402ebdb21017236df4450914941352`](https://explorer-studio.genlayer.com/tx/0x07d93f3f70a37c632224c7e4fa7f03904a402ebdb21017236df4450914941352). User-provided Explorer receipt: **FINALIZED / Accepted / GenVM SUCCESS**; signer `0x4C7cb73aC8F8999af21cfc9fF4cF2333a9508Dcb`, nonce 553, `approve_change(1)` returned **`ONE_APPROVAL`**.
+- This proves Principal's approval has been recorded; it is **not** Agent approval and **not** policy activation.
+- Read-only CI verifies the stored Principal approval flag at `LATEST_FINAL`, while preserving the separate requirement that both parties approve before activation.
+- **Next:** The bound Agent `0xD6b8A3A5eB329410D9504784812b8569afA8C2aF` must independently call `approve_change(1)` and record the actual `BOTH_APPROVED` receipt; only then should a party call `activate_change(1)`. Do not claim either subsequent transaction succeeded before a receipt.

@@ -115,6 +115,7 @@ const expected={
  change1_accepted_expansion:changeOne?.label==='EXPANDED'&&
   (changeOne?.state==='ASSESSMENT_ACCEPTED'||changeOne?.state==='ACTIVATED'),
  change1_principal_approved:changeOne?.principal_approved===true,
+ change1_agent_approved:changeOne?.agent_approved===true,
  change1_activation_requires_both:changeOne?.state!=='ACTIVATED'||
   (changeOne?.principal_approved===true&&changeOne?.agent_approved===true),
  change1_active_scope_consistent:changeOne?.state==='ACTIVATED'?
@@ -139,5 +140,5 @@ console.log(JSON.stringify({
  audit2:{id:auditTwo?.id,scope_id:auditTwo?.scope_id,scope_version:auditTwo?.scope_version,
   policy_sha256:auditTwo?.scope_sha256,trace_sha256:auditTwo?.trace_sha256,
   state:auditTwo?.state,verdict:auditTwo?.verdict,labels:auditTwo?.labels,agent:auditTwo?.agent},
- limitations:'At LATEST_FINAL, checks Audit #1 UNVERIFIED and Audit #2 BREACH with exact labels, veto step, and immutable fixture. The user-provided accepted assess_change(1) receipt reports EXPANDED, and LATEST_FINAL verifies the same classification and activation safeguards. A read-only state attestation is not an Explorer receipt for the assess_trace(2) transaction; external actions remain fictional.'
+ limitations:'At LATEST_FINAL, checks Audit #1 UNVERIFIED and Audit #2 BREACH with exact labels, veto step, and immutable fixture. The user-provided signed receipts show both independent Change #1 approvals, and LATEST_FINAL now checks both flags alongside the EXPANDED assessment and strict activation safeguards. A read-only state attestation is not an Explorer receipt for the assess_trace(2) transaction; external actions remain fictional.'
 },null,2));

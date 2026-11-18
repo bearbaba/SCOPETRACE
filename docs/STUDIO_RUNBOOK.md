@@ -1,8 +1,12 @@
 # SCOPETRACE — Studio deployment and evidence runbook
 
-**Target:** GenLayer Studionet. **Status:** Contract A Studio import address supplied; FINALIZED and deployed-source match still need independent verification; Contract B not deployed. Collect actual Explorer receipts before submission.
+**Target:** GenLayer Studionet. **Status:** Both A and B Studio import addresses supplied; FINALIZED, matching deployed sources, and actual constructor binding pending independent read-only attestation. No signed cross-contract workflow tested. Collect actual Explorer receipts before submission.
 
 **User-supplied Contract A candidate:** [`0xEE7B3883e8a52A48368AdB0528F49730A0aE1689`](https://studio.genlayer.com/?import-contract=0xEE7B3883e8a52A48368AdB0528F49730A0aE1689). Check `stats()` returns `name=SCOPEDELTA` and `version=1.0.0`, and check A is FINALIZED before deploying B.
+
+**User-supplied Contract B candidate:** [`0xaD4de51008032F665d44964B1589B7D112156a32`](https://studio.genlayer.com/?import-contract=0xaD4de51008032F665d44964B1589B7D112156a32). B's `get_registry()` must return the exact A address `0xEE7B3883e8a52A48368AdB0528F49730A0aE1689`. A and B deployments are not accepted consensus proof by themselves.
+
+Run `npm install && npm run verify:studionet` to perform a **read-only source-code identity and LATEST_FINAL constructor check** without signing any wallet transaction. This does **not** prove create_scope / submit_trace / assess_trace succeeded.
 
 ## Contract A: ScopeDelta
 

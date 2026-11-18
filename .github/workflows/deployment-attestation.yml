@@ -1,0 +1,21 @@
+name: Read-only Studionet deployment attestation
+on:
+  push:
+    branches: [main, feat/studionet-readonly-attestation]
+  pull_request:
+  workflow_dispatch:
+jobs:
+  attest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Verify both deployed contract sources and pinned registry
+        env:
+          SCOPETRACE_SCOPEDELTA_ADDRESS: '0xEE7B3883e8a52A48368AdB0528F49730A0aE1689'
+          SCOPETRACE_TRACEBOUND_ADDRESS: '0xaD4de51008032F665d44964B1589B7D112156a32'
+        run: npm run verify:studionet

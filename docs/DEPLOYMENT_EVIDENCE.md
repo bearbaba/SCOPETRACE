@@ -87,6 +87,10 @@ No fabricated transaction hashes or success claims are supplied here.
 - User-provided Explorer receipt: **FINALIZED / Accepted / GenVM SUCCESS**, return **Change ID = 1**, `scope_id=1`, nonce 135, value 0 GEN.
 - Signed by bound Agent `0xD6b8A3A5eB329410D9504784812b8569afA8C2aF`; to ScopeDelta A `0xEE7B3883e8a52A48368AdB0528F49730A0aE1689`.
 - Original allowed actions `read_ticket`, `write_summary`; requested new allowed action `tag_ticket` (existing forbidden actions `external_export` and `transfer_funds` retained). Goal and constraints unchanged.
-- This **proposes**, but does **not** activate, a scope expansion. Contract A's deterministic mandatory expansion check is expected to classify the change as `EXPANDED`; independent AI consensus is **not yet evidenced**.
+- This **proposes**, but does **not** activate, a scope expansion. Contract A returned **`EXPANDED`** in a real Accepted / Finalized assessment (below); this is an assessment of a proposed expansion, **not** automatic authorization.
 - Read-only CI verifies `get_change(1)` at `LATEST_FINAL`, including its proposer, base version/hash, exact proposed actions and canonical new SHA, regardless of subsequent review state.
-- **Next transaction:** `assess_change(1)` from Principal or Agent. Capture an actual FINALIZED / Accepted / SUCCESS receipt and the returned classification. Do not call `approve_change` or `activate_change` before reviewing that result.
+- **assess_change(1) TX:** [`0x5029d3cd69311fb93166771e7a414616824dfdb7ef841f9d8e0e7d63bd174d2f`](https://explorer-studio.genlayer.com/tx/0x5029d3cd69311fb93166771e7a414616824dfdb7ef841f9d8e0e7d63bd174d2f).
+- User-provided Explorer receipt: **FINALIZED / Accepted / GenVM SUCCESS**; Agent signer `0xD6b8A3A5eB329410D9504784812b8569afA8C2aF`, nonce 136, result **`EXPANDED`**.
+- Genuine GenLayer Equivalence Principle output: `{"label":"EXPANDED"}`.
+- This proves an accepted on-chain classification from ScopeDelta A, alongside the prior accepted AI assessment of TraceBound Audit #1. Read-only CI verifies Change #1's resulting `label=EXPANDED` and `state=ASSESSMENT_ACCEPTED` or, if later activated through the required two approvals, `ACTIVATED`.
+- **Next security gate:** separately test `approve_change(1)` with Principal and Agent, then `activate_change(1)` only after both approvals; record transaction receipts. Until activation, active Scope #1 version remains 1.

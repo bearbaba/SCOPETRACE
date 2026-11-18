@@ -15,6 +15,13 @@ TraceBound is a separate auditing primitive. It reads the **live active policy f
 
 **Trust boundary:** traces are self-reported and hashes do not prove omitted actions did not happen. This is not a production telemetry oracle, funds controller, or actual enforcement firewall. The contract names, declared version and hash of A are checked, but deployment of B still requires trusting/verifying the selected source address.
 
+## Deployment tracking — ScopeDelta address supplied (18 Nov 2026)
+
+- **Contract A candidate (user-provided Studio import):** [ScopeDelta 0xEE7B3883e8a52A48368AdB0528F49730A0aE1689](https://studio.genlayer.com/?import-contract=0xEE7B3883e8a52A48368AdB0528F49730A0aE1689)
+- **Verification status:** Import URL provided; deployment finality, deployed source identity, and `LATEST_FINAL stats()` not independently checked in this repository yet.
+- **Contract B:** `contracts/trace_bound.py`, deploy with constructor `scope_registry_address="0xEE7B3883e8a52A48368AdB0528F49730A0aE1689"` **only after** confirming A is deployed and `stats()` reports `SCOPEDELTA`, version `1.0.0`.
+- **Contract B address, cross-contract read results and Explorer TX links:** Pending. Never infer from this import URL.
+
 ## Deploy on GenLayer Studio / Studionet
 
 1. Paste `contracts/scope_delta.py` into Studio, deploy **ScopeDelta** without constructor arguments. Record the **actual finalized address A**.

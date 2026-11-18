@@ -92,7 +92,14 @@ const expected={
   JSON.stringify(sorted(auditTwo?.steps))===canonicalBreachTrace,
  audit2_forbidden_action_frozen:auditTwo?.frozen_policy?.forbidden_actions?.includes('external_export')===true&&
   auditTwo?.steps?.[1]?.action==='external_export',
- audit2_valid_state:auditTwo?.state==='SUBMITTED'||(auditTwo?.state==='ASSESSED'&&auditTwo?.verdict==='BREACH')
+ audit2_assessed_breach:auditTwo?.state==='ASSESSED'&&auditTwo?.verdict==='BREACH',
+ audit2_violation_labels:auditTwo?.labels?.scope_alignment==='VIOLATION'&&
+  auditTwo?.labels?.sequence_integrity==='PASS'&&
+  auditTwo?.labels?.evidence_sufficiency==='REVIEW',
+ audit2_deterministic_veto:Array.isArray(auditTwo?.deterministic_out_of_scope_steps)&&
+  auditTwo.deterministic_out_of_scope_steps.length===1&&
+  auditTwo.deterministic_out_of_scope_steps[0]===2,
+ audit2_unacknowledged:auditTwo?.principal_ack==='NONE'
 
 };
 if(Object.values(expected).some(ok=>!ok))throw Error('LATEST_FINAL contract policy/binding mismatch: '+JSON.stringify({expected,aStats,bStats,bAddress}));
@@ -108,5 +115,5 @@ console.log(JSON.stringify({
  audit2:{id:auditTwo?.id,scope_id:auditTwo?.scope_id,scope_version:auditTwo?.scope_version,
   policy_sha256:auditTwo?.scope_sha256,trace_sha256:auditTwo?.trace_sha256,
   state:auditTwo?.state,verdict:auditTwo?.verdict,labels:auditTwo?.labels,agent:auditTwo?.agent},
- limitations:'At LATEST_FINAL, confirms Audit #1 UNVERIFIED and Audit #2 stored submission. An Audit #2 BREACH requires separately finalized assess_trace(2); fixtures do not prove external activity.'
+ limitations:'At LATEST_FINAL, checks Audit #1 UNVERIFIED and Audit #2 BREACH with exact labels, veto step, and immutable fixture. A read-only state attestation is not an Explorer receipt for the assess_trace(2) transaction; external actions remain fictional.'
 },null,2));

@@ -94,3 +94,12 @@ No fabricated transaction hashes or success claims are supplied here.
 - Genuine GenLayer Equivalence Principle output: `{"label":"EXPANDED"}`.
 - This proves an accepted on-chain classification from ScopeDelta A, alongside the prior accepted AI assessment of TraceBound Audit #1. Read-only CI verifies Change #1's resulting `label=EXPANDED` and `state=ASSESSMENT_ACCEPTED` or, if later activated through the required two approvals, `ACTIVATED`.
 - **Next security gate:** separately test `approve_change(1)` with Principal and Agent, then `activate_change(1)` only after both approvals; record transaction receipts. Until activation, active Scope #1 version remains 1.
+
+## Negative security gate — premature activation rejected (18 November 2026)
+
+- **Rejected attempt TX:** [`0xf82c0f5f8dcb30c2d87d2706b88264d35a5352281e149a60bdd3a90dad45727e`](https://explorer-studio.genlayer.com/tx/0xf82c0f5f8dcb30c2d87d2706b88264d35a5352281e149a60bdd3a90dad45727e).
+- User-provided Explorer receipt: outer transaction **FINALIZED / Accepted**, but **GenVM ERROR / Rollback** (not a successful activation).
+- Principal `0x4C7cb73aC8F8999af21cfc9fF4cF2333a9508Dcb` attempted `activate_change(1)` on ScopeDelta A, nonce 552.
+- Exact reported rejection: `two independent approvals and accepted review required`. Since `assess_change(1)` had already succeeded, the missing requirement is approval by both independent wallets. An outer Accepted consensus does **not** override GenVM rollback.
+- This rejection is evidence that the dual-approval activation guard is enforced. No activation was committed by the rejected call. The read-only CI additionally checks active policy version/hash against the change's state at `LATEST_FINAL`.
+- **Next:** Principal should call `approve_change(1)` and obtain `ONE_APPROVAL`, then the bound Agent separately calls `approve_change(1)` and obtains `BOTH_APPROVED`, and only then should a party call `activate_change(1)`. Record actual receipts. Never claim either approval has occurred without proof.

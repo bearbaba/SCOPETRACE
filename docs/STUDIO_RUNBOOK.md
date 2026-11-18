@@ -1,6 +1,8 @@
 # SCOPETRACE — Studio deployment and evidence runbook
 
-**Target:** GenLayer Studionet. **Status:** NOT DEPLOYED. Complete this runbook with actual on-chain links, never guessed addresses.
+**Target:** GenLayer Studionet. **Status:** Contract A Studio import address supplied; FINALIZED and deployed-source match still need independent verification; Contract B not deployed. Collect actual Explorer receipts before submission.
+
+**User-supplied Contract A candidate:** [`0xEE7B3883e8a52A48368AdB0528F49730A0aE1689`](https://studio.genlayer.com/?import-contract=0xEE7B3883e8a52A48368AdB0528F49730A0aE1689). Check `stats()` returns `name=SCOPEDELTA` and `version=1.0.0`, and check A is FINALIZED before deploying B.
 
 ## Contract A: ScopeDelta
 
@@ -15,7 +17,7 @@
 
 ## Contract B: TraceBound
 
-6. Paste `contracts/trace_bound.py` into Studio. At deploy, set its required constructor `scope_registry_address` to the **actual address A**. Deploy B. Never paste the address of an unrelated contract or a sample placeholder.
+6. Paste `contracts/trace_bound.py` into Studio. At deploy, set its required constructor `scope_registry_address` to `0xEE7B3883e8a52A48368AdB0528F49730A0aE1689` **only once A is verified as FINALIZED and correct source**. Deploy B. Never paste the address of an unrelated contract or a sample placeholder.
 7. Read B `stats()` / `get_registry()` and assert B's stored source address equals deployed A. Use `get_active_scope(scope_id)` from A as the provenance check.
 8. Connect the named **Agent** wallet. Build a list of 1–16 ordered trace steps. Each has `seq`, `action`, `note` and an actual SHA-256 digest of externally retained evidence bytes. This digest binds only submitted evidence, not external activity truth.
 9. Save the steps as e.g. `trace.json`, then compute its **canonical JSON** digest:

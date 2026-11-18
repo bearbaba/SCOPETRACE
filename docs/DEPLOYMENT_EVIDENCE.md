@@ -44,4 +44,18 @@ No fabricated transaction hashes or success claims are supplied here.
 - **Initial allowed actions:** `read_ticket`, `write_summary`. **Forbidden:** `external_export`, `transfer_funds`.
 - An independent read-only CI attestation now reads `get_scope(1)` and `get_active_scope(1)` at `LATEST_FINAL`; it verifies the historical SHA and signer addresses without signing anything.
 
-**Next proof gate:** The Agent must submit a real action trace to B. Until that is FINALIZED / Accepted and B `get_audit` returns the frozen scope hash, actual cross-contract execution remains unproven.
+**Cross-contract proof gate:** Satisfied by Audit #1, pending independent LATEST_FINAL readback CI recheck. A live semantic AI verdict is still not established.
+
+
+## Audit #1 — real Agent-signed cross-contract submission (18 November 2026)
+
+- **submit_trace:** [`0x02bfc789ed69f4615bec61bbeed76b16640c88f0aa72d6685ef62d5adb55b531`](https://explorer-studio.genlayer.com/tx/0x02bfc789ed69f4615bec61bbeed76b16640c88f0aa72d6685ef62d5adb55b531)
+- User-provided Explorer record: **FINALIZED / Accepted / GenVM SUCCESS**, returned **Audit ID = 1**.
+- From Agent `0xD6b8A3A5eB329410D9504784812b8569afA8C2aF`, to deployed TraceBound B.
+- Signed input: `scope_id=1`, canonical `trace_json` from [synthetic fixture](../examples/scope1_allowed_trace.json), and `trace_sha256=e6ce66c283abba292a41aa3ce0cc6d83d6b004fb1b9bcbc2eec27d9ef5a93df2`.
+- Returned Audit #1: `registry=0xee7b3883e8a52a48368adb0528f49730a0ae1689`, `scope_version=1`, `scope_sha256=facc957baeedb76db936131d228e88f3ce5455e35652938a5b06882bad5550c9`, `state=SUBMITTED`, `verdict=""`.
+- This demonstrates that B's submission succeeded while reading the active ScopeDelta policy; its original policy hash, agent identity and trace digest can now be verified independently using `scripts/verify-deployment.mjs`.
+
+**Caveat:** The evidence items are fictional samples created for this demo. This proves an on-chain cross-contract scope-bound record, **not** real operational activity or independent source truth.
+
+**Next:** Execute `assess_trace(1)` on Contract B using the named Agent or Principal wallet. Check the real GenLayer consensus outcome before reporting COMPLIANT / BREACH / UNVERIFIED. Do not mistake a leader-only label or `UNDETERMINED` receipt for accepted consensus.

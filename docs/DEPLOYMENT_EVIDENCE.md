@@ -34,3 +34,14 @@ This does not yet prove a successful live cross-contract call with a real scope:
 5. Do not claim independent evidence of real-world agent actions: traces and evidence hashes are user-submitted claims.
 
 No fabricated transaction hashes or success claims are supplied here.
+
+## Scope #1 — real signed transaction (18 November 2026)
+
+- **create_scope:** [0xdb76c4b0ff10564c24085617fc552d26ca94092467cebe11c18a73e73e1e9af2](https://explorer-studio.genlayer.com/tx/0xdb76c4b0ff10564c24085617fc552d26ca94092467cebe11c18a73e73e1e9af2)
+- User-provided Explorer receipt: FINALIZED / Accepted / GenVM SUCCESS; return value **1**.
+- **Principal:** `0x4C7cb73aC8F8999af21cfc9fF4cF2333a9508Dcb`; **Agent:** `0xD6b8A3A5eB329410D9504784812b8569afA8C2aF` (distinct wallets).
+- **Frozen initial version:** 1; **initial policy SHA-256:** `facc957baeedb76db936131d228e88f3ce5455e35652938a5b06882bad5550c9`.
+- **Initial allowed actions:** `read_ticket`, `write_summary`. **Forbidden:** `external_export`, `transfer_funds`.
+- An independent read-only CI attestation now reads `get_scope(1)` and `get_active_scope(1)` at `LATEST_FINAL`; it verifies the historical SHA and signer addresses without signing anything.
+
+**Next proof gate:** The Agent must submit a real action trace to B. Until that is FINALIZED / Accepted and B `get_audit` returns the frozen scope hash, actual cross-contract execution remains unproven.

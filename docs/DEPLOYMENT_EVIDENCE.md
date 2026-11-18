@@ -81,3 +81,12 @@ No fabricated transaction hashes or success claims are supplied here.
 - **Assessment result shared by the user:** subsequent `get_audit(2)` output reports `state=ASSESSED`, `verdict=BREACH`, with `scope_alignment=VIOLATION`, `sequence_integrity=PASS`, `evidence_sufficiency=REVIEW`, `deterministic_out_of_scope_steps=[2]`, and `principal_ack=NONE`. The separate `assess_trace(2)` TX hash/Explorer receipt is **not yet provided**; do not describe its independent consensus receipt as checked.
 - Next evidence step: obtain the existing `assess_trace(2)` TX hash and link the receipt (do **not** rerun an already assessed trace). Independently attest the stored BREACH outcome at `LATEST_FINAL`, then test `propose_change` / `assess_change` on ScopeDelta A.
 
+## Scope #1 — real Agent-signed proposed permission expansion / Change #1 (18 November 2026)
+
+- **propose_change TX:** [`0x7d016ac6bc0632728e6e2bb78eaff95b18de2ae24eb0ffad97d957141a6b11f4`](https://explorer-studio.genlayer.com/tx/0x7d016ac6bc0632728e6e2bb78eaff95b18de2ae24eb0ffad97d957141a6b11f4)
+- User-provided Explorer receipt: **FINALIZED / Accepted / GenVM SUCCESS**, return **Change ID = 1**, `scope_id=1`, nonce 135, value 0 GEN.
+- Signed by bound Agent `0xD6b8A3A5eB329410D9504784812b8569afA8C2aF`; to ScopeDelta A `0xEE7B3883e8a52A48368AdB0528F49730A0aE1689`.
+- Original allowed actions `read_ticket`, `write_summary`; requested new allowed action `tag_ticket` (existing forbidden actions `external_export` and `transfer_funds` retained). Goal and constraints unchanged.
+- This **proposes**, but does **not** activate, a scope expansion. Contract A's deterministic mandatory expansion check is expected to classify the change as `EXPANDED`; independent AI consensus is **not yet evidenced**.
+- Read-only CI verifies `get_change(1)` at `LATEST_FINAL`, including its proposer, base version/hash, exact proposed actions and canonical new SHA, regardless of subsequent review state.
+- **Next transaction:** `assess_change(1)` from Principal or Agent. Capture an actual FINALIZED / Accepted / SUCCESS receipt and the returned classification. Do not call `approve_change` or `activate_change` before reviewing that result.

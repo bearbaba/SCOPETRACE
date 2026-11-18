@@ -73,7 +73,11 @@ const expected={
  audit1_agent_identity:auditOne?.agent==='0xd6b8a3a5eb329410d9504784812b8569afa8c2af'&&auditOne?.agent===scopeOne?.agent,
  audit1_trace_matches_fixture:auditOne?.trace_sha256===auditDigest&&
   sha(canonicalTrace)===auditDigest&&
-  JSON.stringify(sorted(auditOne?.steps))===canonicalTrace
+  JSON.stringify(sorted(auditOne?.steps))===canonicalTrace,
+ audit1_consensus_finalized:auditOne?.state==='ASSESSED'&&auditOne?.verdict==='UNVERIFIED',
+ audit1_semantic_labels:auditOne?.labels?.scope_alignment==='PASS'&&
+  auditOne?.labels?.sequence_integrity==='PASS'&&
+  auditOne?.labels?.evidence_sufficiency==='REVIEW'
 
 };
 if(Object.values(expected).some(ok=>!ok))throw Error('LATEST_FINAL contract policy/binding mismatch: '+JSON.stringify({expected,aStats,bStats,bAddress}));
@@ -85,6 +89,6 @@ console.log(JSON.stringify({
  scope1:{initial_sha256:initialSha,latest_final_version:activeOne?.version,principal:scopeOne?.principal,agent:scopeOne?.agent},
  audit1:{id:auditOne?.id,scope_id:auditOne?.scope_id,scope_version:auditOne?.scope_version,
   policy_sha256:auditOne?.scope_sha256,trace_sha256:auditOne?.trace_sha256,
-  state:auditOne?.state,verdict:auditOne?.verdict,agent:auditOne?.agent},
- limitations:'Read-only confirmation of Scope #1 and submitted Audit #1 cross-contract state. AI assessment and verdict not yet established by this run.'
+  state:auditOne?.state,verdict:auditOne?.verdict,labels:auditOne?.labels,agent:auditOne?.agent},
+ limitations:'At LATEST_FINAL, confirms accepted UNVERIFIED AI verdict of Audit #1; evidence claims remain synthetic and do not prove external execution.'
 },null,2));

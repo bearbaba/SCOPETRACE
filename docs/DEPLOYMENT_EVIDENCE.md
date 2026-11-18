@@ -44,7 +44,7 @@ No fabricated transaction hashes or success claims are supplied here.
 - **Initial allowed actions:** `read_ticket`, `write_summary`. **Forbidden:** `external_export`, `transfer_funds`.
 - An independent read-only CI attestation now reads `get_scope(1)` and `get_active_scope(1)` at `LATEST_FINAL`; it verifies the historical SHA and signer addresses without signing anything.
 
-**Cross-contract proof gate:** Satisfied by Audit #1, pending independent LATEST_FINAL readback CI recheck. A live semantic AI verdict is still not established.
+**Cross-contract proof gate:** Satisfied by Audit #1. A live accepted `UNVERIFIED` assessment of Audit #1 is recorded below; an independent LATEST_FINAL CI check enforces its final state.
 
 
 ## Audit #1 — real Agent-signed cross-contract submission (18 November 2026)
@@ -58,4 +58,14 @@ No fabricated transaction hashes or success claims are supplied here.
 
 **Caveat:** The evidence items are fictional samples created for this demo. This proves an on-chain cross-contract scope-bound record, **not** real operational activity or independent source truth.
 
-**Next:** Execute `assess_trace(1)` on Contract B using the named Agent or Principal wallet. Check the real GenLayer consensus outcome before reporting COMPLIANT / BREACH / UNVERIFIED. Do not mistake a leader-only label or `UNDETERMINED` receipt for accepted consensus.
+**Next:** Submit a separate synthetic unauthorized-action trace on B as Audit #2 to demonstrate the deterministic violation veto. Do not run `assess_trace(1)` again: Audit #1 has already been assessed.
+
+
+## Audit #1 — genuine GenLayer AI consensus (18 November 2026)
+
+- **assess_trace(1) transaction:** [`0x80644f594c4328466fba0d680afd98fbd6faea38b2d856b981a5cb06d7b7e7e0`](https://explorer-studio.genlayer.com/tx/0x80644f594c4328466fba0d680afd98fbd6faea38b2d856b981a5cb06d7b7e7e0)
+- From the named Agent wallet to TraceBound B. User-provided Explorer receipt: **FINALIZED, Accepted, GenVM SUCCESS**.
+- **Returned verdict: `UNVERIFIED`.** Equivalence Principle output: `{"evidence_sufficiency":"REVIEW","scope_alignment":"PASS","sequence_integrity":"PASS"}`.
+- The reviewer found no mismatch in declared scope and action sequence but declined to verify the completeness of the fictional external evidence. This is a meaningful fail-closed AI classification, *not* a runtime failure and *not* a false `COMPLIANT` attestation.
+- Read-only CI checks `get_audit(1)` against `LATEST_FINAL` to confirm `state=ASSESSED`, `verdict=UNVERIFIED` and all three exact labels. The transaction receipt is the evidence for the Accepted consensus result; a state read alone does not independently show all validator votes.
+- The agent-submitted evidence remains a **synthetic fixture**. Nothing here asserts that external tickets were actually read or exported.

@@ -112,15 +112,22 @@ const expected={
   sha(JSON.stringify(sorted(changeOne?.old_policy)))===initialSha,
  change1_exact_expansion:JSON.stringify(sorted(changeOne?.new_policy))===JSON.stringify(sorted(expectedChangePolicy))&&
   changeOne?.new_sha256===expectedChangeSHA,
- change1_accepted_expansion:changeOne?.label==='EXPANDED'&&
-  (changeOne?.state==='ASSESSMENT_ACCEPTED'||changeOne?.state==='ACTIVATED'),
+ change1_accepted_expansion:changeOne?.label==='EXPANDED'&&changeOne?.state==='ACTIVATED',
  change1_principal_approved:changeOne?.principal_approved===true,
  change1_agent_approved:changeOne?.agent_approved===true,
- change1_activation_requires_both:changeOne?.state!=='ACTIVATED'||
-  (changeOne?.principal_approved===true&&changeOne?.agent_approved===true),
- change1_active_scope_consistent:changeOne?.state==='ACTIVATED'?
-   (activeOne?.version===2&&activeOne?.policy_sha256===expectedChangeSHA):
-   (activeOne?.version===1&&activeOne?.policy_sha256===initialSha)
+ change1_activation_requires_both:changeOne?.state==='ACTIVATED'&&
+  changeOne?.principal_approved===true&&changeOne?.agent_approved===true,
+ change1_active_scope_v2:scopeOne?.active_version===2&&activeOne?.version===2&&
+  activeOne?.policy_sha256===expectedChangeSHA&&scopeOne?.active?.policy_sha256===expectedChangeSHA,
+ change1_v2_exact_policy:JSON.stringify(sorted(activeOne?.policy))===JSON.stringify(sorted(expectedChangePolicy))&&
+  activeOne?.policy?.allowed_actions?.includes('tag_ticket')===true&&
+  activeOne?.policy?.forbidden_actions?.includes('external_export')===true&&
+  activeOne?.policy?.forbidden_actions?.includes('transfer_funds')===true,
+ change1_v2_history:Array.isArray(scopeOne?.history)&&scopeOne.history.length===2&&
+  scopeOne.history[0]?.version===1&&scopeOne.history[0]?.policy_sha256===initialSha&&
+  scopeOne.history[1]?.version===2&&scopeOne.history[1]?.policy_sha256===expectedChangeSHA,
+ change1_v2_closed:scopeOne?.pending_change===0&&
+  Array.isArray(scopeOne?.closed_changes)&&scopeOne.closed_changes.includes(1)
 
 };
 if(Object.values(expected).some(ok=>!ok))throw Error('LATEST_FINAL contract policy/binding mismatch: '+JSON.stringify({expected,aStats,bStats,bAddress}));
@@ -140,5 +147,5 @@ console.log(JSON.stringify({
  audit2:{id:auditTwo?.id,scope_id:auditTwo?.scope_id,scope_version:auditTwo?.scope_version,
   policy_sha256:auditTwo?.scope_sha256,trace_sha256:auditTwo?.trace_sha256,
   state:auditTwo?.state,verdict:auditTwo?.verdict,labels:auditTwo?.labels,agent:auditTwo?.agent},
- limitations:'At LATEST_FINAL, checks Audit #1 UNVERIFIED and Audit #2 BREACH with exact labels, veto step, and immutable fixture. The user-provided signed receipts show both independent Change #1 approvals, and LATEST_FINAL now checks both flags alongside the EXPANDED assessment and strict activation safeguards. A read-only state attestation is not an Explorer receipt for the assess_trace(2) transaction; external actions remain fictional.'
+ limitations:'At LATEST_FINAL, checks Audit #1 UNVERIFIED and Audit #2 BREACH with exact labels, veto step, and immutable fixture. The user-provided accepted activate_change(1) receipt returns ACTIVATED; LATEST_FINAL strictly confirms Scope #1 version 2, exact approved policy digest, both signatures, closed change, and preserved v1 history. A read-only state attestation is not an Explorer receipt for the assess_trace(2) transaction; external actions remain fictional.'
 },null,2));

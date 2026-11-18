@@ -148,10 +148,16 @@ class TraceBound(gl.Contract):
             if all(proposed[k] == "PASS" for k in CRITERIA):
                 independently = parse_labels(judge())
                 return all(independently[k] == "PASS" for k in CRITERIA) and not violations
-            # Conservative decisions do not grant compliance; independent validator
-            # still confirms deterministic violations before accepting these.
-            if violations and proposed["scope_alignment"] != "VIOLATION":
-                return False
+            # A deterministic forbidden action is independently reproducible.
+            if violations:
+                return proposed["scope_alignment"] == "VIOLATION"
+            # An adverse semantic verdict is consequential. Validators must
+            # independently agree on each claimed VIOLATION (not just JSON shape).
+            flagged = [k for k in CRITERIA if proposed[k] == "VIOLATION"]
+            if flagged:
+                independently = parse_labels(judge())
+                return all(independently[k] == "VIOLATION" for k in flagged)
+            # REVIEW is a conservative non-compliance result, never authorization.
             return True
         accepted = parse_labels(gl.vm.run_nondet_unsafe(judge, validate))
         if violations:

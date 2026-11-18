@@ -112,7 +112,13 @@ const expected={
   sha(JSON.stringify(sorted(changeOne?.old_policy)))===initialSha,
  change1_exact_expansion:JSON.stringify(sorted(changeOne?.new_policy))===JSON.stringify(sorted(expectedChangePolicy))&&
   changeOne?.new_sha256===expectedChangeSHA,
- change1_not_necessarily_activated:changeOne?.state==='SUBMITTED'||changeOne?.state==='ASSESSMENT_ACCEPTED'||changeOne?.state==='REVIEW'||changeOne?.state==='ACTIVATED'||changeOne?.state==='REJECTED'
+ change1_accepted_expansion:changeOne?.label==='EXPANDED'&&
+  (changeOne?.state==='ASSESSMENT_ACCEPTED'||changeOne?.state==='ACTIVATED'),
+ change1_activation_requires_both:changeOne?.state!=='ACTIVATED'||
+  (changeOne?.principal_approved===true&&changeOne?.agent_approved===true),
+ change1_active_scope_consistent:changeOne?.state==='ACTIVATED'?
+   (activeOne?.version===2&&activeOne?.policy_sha256===expectedChangeSHA):
+   (activeOne?.version===1&&activeOne?.policy_sha256===initialSha)
 
 };
 if(Object.values(expected).some(ok=>!ok))throw Error('LATEST_FINAL contract policy/binding mismatch: '+JSON.stringify({expected,aStats,bStats,bAddress}));
@@ -127,9 +133,10 @@ console.log(JSON.stringify({
   state:auditOne?.state,verdict:auditOne?.verdict,labels:auditOne?.labels,agent:auditOne?.agent},
  change1:{id:changeOne?.id,scope_id:changeOne?.scope_id,base_version:changeOne?.base_version,
   base_sha256:changeOne?.base_sha256,new_sha256:changeOne?.new_sha256,
-  proposer:changeOne?.proposer,state:changeOne?.state,label:changeOne?.label},
+  proposer:changeOne?.proposer,state:changeOne?.state,label:changeOne?.label,
+  principal_approved:changeOne?.principal_approved,agent_approved:changeOne?.agent_approved},
  audit2:{id:auditTwo?.id,scope_id:auditTwo?.scope_id,scope_version:auditTwo?.scope_version,
   policy_sha256:auditTwo?.scope_sha256,trace_sha256:auditTwo?.trace_sha256,
   state:auditTwo?.state,verdict:auditTwo?.verdict,labels:auditTwo?.labels,agent:auditTwo?.agent},
- limitations:'At LATEST_FINAL, checks Audit #1 UNVERIFIED and Audit #2 BREACH with exact labels, veto step, and immutable fixture. The submitted ScopeDelta change is authenticated but not independently assessed until a separate assess_change(1) receipt is checked. A read-only state attestation is not an Explorer receipt for the assess_trace(2) transaction; external actions remain fictional.'
+ limitations:'At LATEST_FINAL, checks Audit #1 UNVERIFIED and Audit #2 BREACH with exact labels, veto step, and immutable fixture. The user-provided accepted assess_change(1) receipt reports EXPANDED, and LATEST_FINAL verifies the same classification and activation safeguards. A read-only state attestation is not an Explorer receipt for the assess_trace(2) transaction; external actions remain fictional.'
 },null,2));

@@ -69,3 +69,15 @@ No fabricated transaction hashes or success claims are supplied here.
 - The reviewer found no mismatch in declared scope and action sequence but declined to verify the completeness of the fictional external evidence. This is a meaningful fail-closed AI classification, *not* a runtime failure and *not* a false `COMPLIANT` attestation.
 - Read-only CI checks `get_audit(1)` against `LATEST_FINAL` to confirm `state=ASSESSED`, `verdict=UNVERIFIED` and all three exact labels. The transaction receipt is the evidence for the Accepted consensus result; a state read alone does not independently show all validator votes.
 - The agent-submitted evidence remains a **synthetic fixture**. Nothing here asserts that external tickets were actually read or exported.
+
+## Audit #2 — real Agent-signed negative-path submission (18 November 2026)
+
+- **submit_trace transaction:** [`0xe2cc7fdf8afdeb6fb31a5ff94f768902891bcbeec4d3d1979a38357bb55c9c89`](https://explorer-studio.genlayer.com/tx/0xe2cc7fdf8afdeb6fb31a5ff94f768902891bcbeec4d3d1979a38357bb55c9c89)
+- User-provided Explorer receipt: **FINALIZED / Accepted / GenVM SUCCESS**; method `submit_trace`, returned **Audit ID = 2**.
+- From bound Agent `0xD6b8A3A5eB329410D9504784812b8569afA8C2aF` to deployed TraceBound B `0xaD4de51008032F665d44964B1589B7D112156a32`, nonce 133, value 0 GEN.
+- Exact signed arguments: `scope_id=1`, `trace_json` from [the hypothetical forbidden-action fixture](../examples/scope1_breach_trace.json), `trace_sha256=6b0c3d450f4c057a4fd77e2a30e31453052c6b0219ac8e8602cd8218fba32db2`.
+- Its second declared action is `external_export`, **forbidden** by Scope #1. The fixture represents a hypothetical violation using fictional records, **not a real export**.
+- Signed submission is proven by the user-provided transaction receipt. Read-only CI independently checks `get_audit(2)` at `LATEST_FINAL` against the canonical fixture, frozen scope version/hash, registry address, and Agent identity.
+- **Assessment result shared by the user:** subsequent `get_audit(2)` output reports `state=ASSESSED`, `verdict=BREACH`, with `scope_alignment=VIOLATION`, `sequence_integrity=PASS`, `evidence_sufficiency=REVIEW`, `deterministic_out_of_scope_steps=[2]`, and `principal_ack=NONE`. The separate `assess_trace(2)` TX hash/Explorer receipt is **not yet provided**; do not describe its independent consensus receipt as checked.
+- Next evidence step: obtain the existing `assess_trace(2)` TX hash and link the receipt (do **not** rerun an already assessed trace). Independently attest the stored BREACH outcome at `LATEST_FINAL`, then test `propose_change` / `assess_change` on ScopeDelta A.
+

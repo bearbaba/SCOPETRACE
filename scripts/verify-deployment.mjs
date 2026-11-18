@@ -40,6 +40,7 @@ const bStats=await read(sourceB,'stats');
 const bAddress=await read(sourceB,'get_registry');
 const scopeOne=await read(sourceA,'get_scope',[1]);
 const activeOne=await read(sourceA,'get_active_scope',[1]);
+const changeOne=await read(sourceA,'get_change',[1]);
 const auditOne=await read(sourceB,'get_audit',[1]);
 const auditTwo=await read(sourceB,'get_audit',[2]);
 const expectedTrace=JSON.parse(readFileSync('examples/scope1_allowed_trace.json','utf8'));
@@ -56,6 +57,11 @@ const breachDigest='6b0c3d450f4c057a4fd77e2a30e31453052c6b0219ac8e8602cd8218fba3
 const initialSha='facc957baeedb76db936131d228e88f3ce5455e35652938a5b06882bad5550c9';
 const initialPrincipal='0x4c7cb73ac8f8999af21cfc9ff4cf2333a9508dcb';
 const initialAgent='0xd6b8a3a5eb329410d9504784812b8569afa8c2af';
+const expectedChangePolicy={
+ ...scopeOne?.history?.[0]?.policy,
+ allowed_actions:['read_ticket','tag_ticket','write_summary']
+};
+const expectedChangeSHA=sha(JSON.stringify(sorted(expectedChangePolicy)));
 const expected={
  scope_name:aStats?.name==='SCOPEDELTA',
  scope_version:aStats?.version==='1.0.0',
@@ -99,7 +105,20 @@ const expected={
  audit2_deterministic_veto:Array.isArray(auditTwo?.deterministic_out_of_scope_steps)&&
   auditTwo.deterministic_out_of_scope_steps.length===1&&
   auditTwo.deterministic_out_of_scope_steps[0]===2,
- audit2_unacknowledged:auditTwo?.principal_ack==='NONE'
+ audit2_unacknowledged:auditTwo?.principal_ack==='NONE',
+ change1_exists:changeOne?.id===1&&changeOne?.scope_id===1&&aStats?.changes>=1,
+ change1_agent_proposer:changeOne?.proposer===initialAgent&&changeOne?.proposer===scopeOne?.agent,
+ change1_frozen_base:changeOne?.base_version===1&&changeOne?.base_sha256===initialSha&&
+  sha(JSON.stringify(sorted(changeOne?.old_policy)))===initialSha,
+ change1_exact_expansion:JSON.stringify(sorted(changeOne?.new_policy))===JSON.stringify(sorted(expectedChangePolicy))&&
+  changeOne?.new_sha256===expectedChangeSHA,
+ change1_accepted_expansion:changeOne?.label==='EXPANDED'&&
+  (changeOne?.state==='ASSESSMENT_ACCEPTED'||changeOne?.state==='ACTIVATED'),
+ change1_activation_requires_both:changeOne?.state!=='ACTIVATED'||
+  (changeOne?.principal_approved===true&&changeOne?.agent_approved===true),
+ change1_active_scope_consistent:changeOne?.state==='ACTIVATED'?
+   (activeOne?.version===2&&activeOne?.policy_sha256===expectedChangeSHA):
+   (activeOne?.version===1&&activeOne?.policy_sha256===initialSha)
 
 };
 if(Object.values(expected).some(ok=>!ok))throw Error('LATEST_FINAL contract policy/binding mismatch: '+JSON.stringify({expected,aStats,bStats,bAddress}));
@@ -112,8 +131,12 @@ console.log(JSON.stringify({
  audit1:{id:auditOne?.id,scope_id:auditOne?.scope_id,scope_version:auditOne?.scope_version,
   policy_sha256:auditOne?.scope_sha256,trace_sha256:auditOne?.trace_sha256,
   state:auditOne?.state,verdict:auditOne?.verdict,labels:auditOne?.labels,agent:auditOne?.agent},
+ change1:{id:changeOne?.id,scope_id:changeOne?.scope_id,base_version:changeOne?.base_version,
+  base_sha256:changeOne?.base_sha256,new_sha256:changeOne?.new_sha256,
+  proposer:changeOne?.proposer,state:changeOne?.state,label:changeOne?.label,
+  principal_approved:changeOne?.principal_approved,agent_approved:changeOne?.agent_approved},
  audit2:{id:auditTwo?.id,scope_id:auditTwo?.scope_id,scope_version:auditTwo?.scope_version,
   policy_sha256:auditTwo?.scope_sha256,trace_sha256:auditTwo?.trace_sha256,
   state:auditTwo?.state,verdict:auditTwo?.verdict,labels:auditTwo?.labels,agent:auditTwo?.agent},
- limitations:'At LATEST_FINAL, checks Audit #1 UNVERIFIED and Audit #2 BREACH with exact labels, veto step, and immutable fixture. A read-only state attestation is not an Explorer receipt for the assess_trace(2) transaction; external actions remain fictional.'
+ limitations:'At LATEST_FINAL, checks Audit #1 UNVERIFIED and Audit #2 BREACH with exact labels, veto step, and immutable fixture. The user-provided accepted assess_change(1) receipt reports EXPANDED, and LATEST_FINAL verifies the same classification and activation safeguards. A read-only state attestation is not an Explorer receipt for the assess_trace(2) transaction; external actions remain fictional.'
 },null,2));

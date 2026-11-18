@@ -15,12 +15,14 @@ TraceBound is a separate auditing primitive. It reads the **live active policy f
 
 **Trust boundary:** traces are self-reported and hashes do not prove omitted actions did not happen. This is not a production telemetry oracle, funds controller, or actual enforcement firewall. The contract names, declared version and hash of A are checked, but deployment of B still requires trusting/verifying the selected source address.
 
-## Deployment tracking — ScopeDelta address supplied (18 Nov 2026)
+## Studionet deployment references — both addresses supplied (18 Nov 2026)
 
 - **Contract A candidate (user-provided Studio import):** [ScopeDelta 0xEE7B3883e8a52A48368AdB0528F49730A0aE1689](https://studio.genlayer.com/?import-contract=0xEE7B3883e8a52A48368AdB0528F49730A0aE1689)
 - **Verification status:** Import URL provided; deployment finality, deployed source identity, and `LATEST_FINAL stats()` not independently checked in this repository yet.
 - **Contract B:** `contracts/trace_bound.py`, deploy with constructor `scope_registry_address="0xEE7B3883e8a52A48368AdB0528F49730A0aE1689"` **only after** confirming A is deployed and `stats()` reports `SCOPEDELTA`, version `1.0.0`.
-- **Contract B address, cross-contract read results and Explorer TX links:** Pending. Never infer from this import URL.
+- **Contract B candidate (user-provided Studio import):** [TraceBound `0xaD4de51008032F665d44964B1589B7D112156a32`](https://studio.genlayer.com/?import-contract=0xaD4de51008032F665d44964B1589B7D112156a32).
+- **Read-only deployment verifier:** `npm run verify:studionet` checks the deployed source bytes for A/B, `stats()`, `get_registry()`, and `LATEST_FINAL` against the GitHub contract files. The CI result (rather than the URLs alone) establishes whether the link is verified.
+- **Signed create/assess/audit TX links:** Pending. Neither import URL proves accepted AI consensus.
 
 ## Deploy on GenLayer Studio / Studionet
 
@@ -31,7 +33,7 @@ TraceBound is a separate auditing primitive. It reads the **live active policy f
 5. Call `assess_trace(audit_id)` and check the finalized receipt and `get_audit(audit_id)` at `LATEST_FINAL`; Principal independently calls `acknowledge_audit`. A completed demo must include a COMPLIANT example and a BREACH/UNVERIFIED example.
 6. To demonstrate change governance: `propose_change → assess_change → approve_change` from each distinct party → `activate_change`; reject any REVIEW/CONFLICT or stale scope.
 
-**Never submit the two GenLayer contribution slots based on unverified simulated tests.** Both contracts must be deployed and cross-contract calls plus real consensus validated before describing the flow as live.
+**Never submit either GenLayer contribution slot based on unverified simulated tests.** Both contracts must be deployed and cross-contract calls plus real consensus validated before describing the flow as live.
 
 ## Verify locally
 

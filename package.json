@@ -1,0 +1,14 @@
+{
+  "name": "scopetrace-attestation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "verify:studionet": "node scripts/verify-deployment.mjs"
+  },
+  "dependencies": {
+    "genlayer-stable": "npm:genlayer-js@1.1.8"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

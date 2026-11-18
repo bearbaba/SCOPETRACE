@@ -2,7 +2,9 @@
 
 Date: 18 November 2026. Chain: GenLayer Studionet, 61999.
 
-Reproducible read-only attestation: https://github.com/bearbaba/SCOPETRACE/actions/runs/44245818416
+Latest passing read-only attestation (post-Scope v2 activation): https://github.com/bearbaba/SCOPETRACE/actions/runs/44253306291
+
+**Current evidence status (18 Nov 2026):** live cross-contract submit and AI assessments on both GenLayer contracts; accepted AI consensus for `assess_trace(1)=UNVERIFIED`, `assess_trace(2)=BREACH`, and `assess_change(1)=EXPANDED`. The two distinct approvals and `activate_change(1)=ACTIVATED` are supported by real signed TX receipts and `LATEST_FINAL` checks. All trace evidence is synthetic and self-reported.
 
 ## Contract A: ScopeDelta
 - Address: 0xEE7B3883e8a52A48368AdB0528F49730A0aE1689
@@ -19,13 +21,13 @@ Reproducible read-only attestation: https://github.com/bearbaba/SCOPETRACE/actio
 - Verified at LATEST_FINAL: name=TRACEBOUND; version=1.0.0; audits=0.
 - Verified stored registry address: 0xee7b3883e8a52a48368adb0528f49730a0ae1689
 
-## Exactly what has and has not been proven
+## Initial deployment baseline — historical checks before the signed workflow
 
 GitHub Actions independently retrieved and byte-compared both deployed Python source files, read both deployed contracts at LATEST_FINAL, and checked that TraceBound's get_registry() and stats().source_registry equal ScopeDelta A. All seven read-only checks passed.
 
-This does not yet prove a successful live cross-contract call with a real scope: no scope existed when these reads were performed. It also does not prove accepted semantic consensus or an actual COMPLIANT/BREACH result.
+At the time of these **initial** checks no scopes or audits existed, so deployment identity alone was insufficient. The later signed calls and final-state checks documented below now prove the *on-chain workflow* occurred; they do not independently prove real-world execution of self-reported agent actions.
 
-## Required next on-chain evidence
+## Original validation checklist (completed items described below)
 
 1. Principal creates a scope on A with independent Agent wallet and original policy. Capture TX hash and read get_active_scope(scope_id).
 2. Agent calls submit_trace on B. Check that the B transaction is FINALIZED / Accepted / SUCCESS and get_audit(audit_id) stores the active scope version/hash.
@@ -78,8 +80,9 @@ No fabricated transaction hashes or success claims are supplied here.
 - Exact signed arguments: `scope_id=1`, `trace_json` from [the hypothetical forbidden-action fixture](../examples/scope1_breach_trace.json), `trace_sha256=6b0c3d450f4c057a4fd77e2a30e31453052c6b0219ac8e8602cd8218fba32db2`.
 - Its second declared action is `external_export`, **forbidden** by Scope #1. The fixture represents a hypothetical violation using fictional records, **not a real export**.
 - Signed submission is proven by the user-provided transaction receipt. Read-only CI independently checks `get_audit(2)` at `LATEST_FINAL` against the canonical fixture, frozen scope version/hash, registry address, and Agent identity.
-- **Assessment result shared by the user:** subsequent `get_audit(2)` output reports `state=ASSESSED`, `verdict=BREACH`, with `scope_alignment=VIOLATION`, `sequence_integrity=PASS`, `evidence_sufficiency=REVIEW`, `deterministic_out_of_scope_steps=[2]`, and `principal_ack=NONE`. The separate `assess_trace(2)` TX hash/Explorer receipt is **not yet provided**; do not describe its independent consensus receipt as checked.
-- Next evidence step: obtain the existing `assess_trace(2)` TX hash and link the receipt (do **not** rerun an already assessed trace). Independently attest the stored BREACH outcome at `LATEST_FINAL`, then test `propose_change` / `assess_change` on ScopeDelta A.
+- **assess_trace(2) TX:** [`0x49ab1442920d761a5f352f13e0fb4c52dfaa4653c01aa7eefc5afdd85b0f8c41`](https://explorer-studio.genlayer.com/tx/0x49ab1442920d761a5f352f13e0fb4c52dfaa4653c01aa7eefc5afdd85b0f8c41). User-provided Explorer receipt: **FINALIZED / Accepted / GenVM SUCCESS**, Agent signer `0xD6b8A3A5eB329410D9504784812b8569afA8C2aF`, nonce 134, method `assess_trace`, `audit_id=2`, return **`BREACH`**. GenLayer Equivalence Principle output: `{"evidence_sufficiency":"REVIEW","scope_alignment":"VIOLATION","sequence_integrity":"PASS"}`.
+- Independent `LATEST_FINAL` `get_audit(2)` attestation confirms `state=ASSESSED`, `verdict=BREACH`, all three exact labels, `deterministic_out_of_scope_steps=[2]`, and `principal_ack=NONE`. The receipt establishes the accepted assessment transaction; the read-only check verifies the persisted outcome. Neither proves that a real export occurred.
+- **Evidence complete for Audit #2:** signed `submit_trace` receipt + signed `assess_trace(2)` receipt + independent `LATEST_FINAL` state attestation. Contract A's `propose_change`, `assess_change`, two signatures and activation are documented below.
 
 ## Scope #1 — real Agent-signed proposed permission expansion / Change #1 (18 November 2026)
 
@@ -112,4 +115,4 @@ No fabricated transaction hashes or success claims are supplied here.
 - With both real independently signed approvals collected, the activation succeeded. This is distinct from the earlier failed/rolled-back activation attempt.
 - Read-only CI attests `get_active_scope(1)` at `LATEST_FINAL` and requires **version 2**, exact `new_sha256` from Change #1, `tag_ticket` in allowed actions, both historical forbidden actions intact, `state=ACTIVATED` and both approval flags true.
 - **Security boundary:** the activation establishes updated *declared permission*, not proof that any real external actions took place. Audits #1 and #2 remain historical snapshots of version 1.
-- The separate `assess_trace(2)` transaction hash is not yet recorded even though its BREACH result has been independently attested by LATEST_FINAL state.
+- The `assess_trace(2)` transaction receipt is now recorded above, completing the transaction evidence for both on-chain audit outcomes. These are synthetic demonstration traces, not externally observed operational activity.

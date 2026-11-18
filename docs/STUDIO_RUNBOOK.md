@@ -1,10 +1,10 @@
 # SCOPETRACE — Studio deployment and evidence runbook
 
-**Target:** GenLayer Studionet. **Status:** Both A and B Studio import addresses supplied; FINALIZED, matching deployed sources, and actual constructor binding pending independent read-only attestation. No signed cross-contract workflow tested. Collect actual Explorer receipts before submission.
+**Target:** GenLayer Studionet. **Status:** Both source identities, LATEST_FINAL public stats and B-to-A constructor binding independently verified via [GitHub Actions](https://github.com/bearbaba/SCOPETRACE/actions/runs/44245818416). Signed cross-contract calls and AI consensus not yet verified. Collect actual Explorer receipts before submission.
 
-**User-supplied Contract A candidate:** [`0xEE7B3883e8a52A48368AdB0528F49730A0aE1689`](https://studio.genlayer.com/?import-contract=0xEE7B3883e8a52A48368AdB0528F49730A0aE1689). Check `stats()` returns `name=SCOPEDELTA` and `version=1.0.0`, and check A is FINALIZED before deploying B.
+**Verified deployed Contract A:** [`0xEE7B3883e8a52A48368AdB0528F49730A0aE1689`](https://studio.genlayer.com/?import-contract=0xEE7B3883e8a52A48368AdB0528F49730A0aE1689). Check `stats()` returns `name=SCOPEDELTA` and `version=1.0.0`, and check A is FINALIZED before deploying B.
 
-**User-supplied Contract B candidate:** [`0xaD4de51008032F665d44964B1589B7D112156a32`](https://studio.genlayer.com/?import-contract=0xaD4de51008032F665d44964B1589B7D112156a32). B's `get_registry()` must return the exact A address `0xEE7B3883e8a52A48368AdB0528F49730A0aE1689`. A and B deployments are not accepted consensus proof by themselves.
+**Verified deployed Contract B:** [`0xaD4de51008032F665d44964B1589B7D112156a32`](https://studio.genlayer.com/?import-contract=0xaD4de51008032F665d44964B1589B7D112156a32). B's `get_registry()` returned the exact A address `0xEE7B3883e8a52A48368AdB0528F49730A0aE1689`. A and B deployments are not accepted consensus proof by themselves.
 
 Run `npm install && npm run verify:studionet` to perform a **read-only source-code identity and LATEST_FINAL constructor check** without signing any wallet transaction. This does **not** prove create_scope / submit_trace / assess_trace succeeded.
 

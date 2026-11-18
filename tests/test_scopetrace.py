@@ -155,4 +155,45 @@ class ContractTests(unittest.TestCase):
         update=POLICY|{"constraints":POLICY["constraints"]+" No weekend report."}
         self.a.propose_change(self.sid,canon(update))
         with self.assertRaisesRegex(UserError,"pending change"):self.a.propose_change(self.sid,canon(update))
+    def test_adverse_semantic_violation_requires_independent_agreement(self):
+        actor(AGENT);s=steps()
+        aid=self.b.submit_trace(self.sid,canon(s),b.sha(canon(s)))
+        self.replies=[
+          {"scope_alignment":"PASS","sequence_integrity":"VIOLATION","evidence_sufficiency":"PASS"},
+          {"scope_alignment":"PASS","sequence_integrity":"PASS","evidence_sufficiency":"PASS"}]
+        with self.assertRaisesRegex(RuntimeError,"validator disagreement"):
+            self.b.assess_trace(aid)
+        self.assertEqual(json.loads(self.b.get_audit(aid))["state"],"SUBMITTED")
+    def test_independent_adverse_verdict_can_commit_breach(self):
+        actor(AGENT);s=steps()
+        aid=self.b.submit_trace(self.sid,canon(s),b.sha(canon(s)))
+        negative={"scope_alignment":"PASS","sequence_integrity":"PASS","evidence_sufficiency":"VIOLATION"}
+        self.replies=[negative,negative]
+        self.assertEqual(self.b.assess_trace(aid),"BREACH")
+        actor(OWNER)
+        self.assertEqual(self.b.acknowledge_audit(aid,False),"DISPUTED")
+    def test_conservative_model_review_never_confirms_compliance(self):
+        actor(AGENT);s=steps();aid=self.b.submit_trace(self.sid,canon(s),b.sha(canon(s)))
+        self.replies=[{"scope_alignment":"PASS","sequence_integrity":"REVIEW","evidence_sufficiency":"PASS"}]
+        self.assertEqual(self.b.assess_trace(aid),"UNVERIFIED")
+    def test_invalid_policy_and_addresses_fail_closed(self):
+        actor(OWNER)
+        with self.assertRaises(UserError):self.a.create_scope(OWNER,canon(POLICY))
+        with self.assertRaises(UserError):self.a.create_scope("not-a-wallet",canon(POLICY))
+        invalid=POLICY|{"forbidden_actions":["read_ticket"]}
+        with self.assertRaises(UserError):self.a.create_scope(AGENT,canon(invalid))
+    def test_removing_a_forbidden_action_is_an_expansion(self):
+        actor(AGENT)
+        less_forbidden=POLICY|{"forbidden_actions":["transfer_funds"]}
+        cid=self.a.propose_change(self.sid,canon(less_forbidden))
+        self.replies=[{"label":"NARROWED"},{"label":"EXPANDED"}]
+        self.assertEqual(self.a.assess_change(cid),"EXPANDED")
+        self.assertEqual(json.loads(self.a.get_scope(self.sid))["active_version"],1)
+    def test_principal_must_acknowledge_and_only_once(self):
+        actor(AGENT);s=steps();aid=self.b.submit_trace(self.sid,canon(s),b.sha(canon(s)))
+        gl.nondet.exec_prompt=lambda *_a,**_k:canon({x:"PASS" for x in b.CRITERIA})
+        self.b.assess_trace(aid)
+        with self.assertRaises(UserError):self.b.acknowledge_audit(aid,True)
+        actor(OWNER);self.b.acknowledge_audit(aid,True)
+        with self.assertRaises(UserError):self.b.acknowledge_audit(aid,False)
 if __name__=="__main__":unittest.main()

@@ -114,6 +114,7 @@ const expected={
   changeOne?.new_sha256===expectedChangeSHA,
  change1_accepted_expansion:changeOne?.label==='EXPANDED'&&
   (changeOne?.state==='ASSESSMENT_ACCEPTED'||changeOne?.state==='ACTIVATED'),
+ change1_principal_approved:changeOne?.principal_approved===true,
  change1_activation_requires_both:changeOne?.state!=='ACTIVATED'||
   (changeOne?.principal_approved===true&&changeOne?.agent_approved===true),
  change1_active_scope_consistent:changeOne?.state==='ACTIVATED'?
